@@ -14,7 +14,7 @@ export class AuthController {
 
   private generateAccessToken = (user: User) => {
     return jwt.sign({ id: user.id, role: user.role }, this.jwtSecret, {
-      expiresIn: "1m",
+      expiresIn: "15m",
     });
   };
 
@@ -213,7 +213,7 @@ export class AuthController {
       }
 
       const { password: _, ...userWithoutPassword } = user.toObject();
-      ResponseFormatter.success(res, userWithoutPassword, "Fetch user");
+      ResponseFormatter.success(res, userWithoutPassword, "Fetch user success");
     } catch (err) {
       logger.error("Fetch user failed:", err);
       res.status(500).json({ message: "Internal server error" });
