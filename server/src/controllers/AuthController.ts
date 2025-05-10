@@ -10,15 +10,27 @@ import jwt from "jsonwebtoken";
 export class AuthController {
   private authService: AuthService;
   private jwtSecret: string;
+  private refreshSecret: string;
+
+  private generateAccessToken = (user: User) => {
+    return jwt.sign({ id: user.id, role: user.role }, this.jwtSecret, {
+      expiresIn: "1m",
+    });
+  };
+
+  private generateRefreshToken = (user: User) => {
+    return jwt.sign({ id: user.id }, this.refreshSecret, { expiresIn: "2m" }); // อายุยาว
+  };
 
   constructor() {
     this.authService = new AuthService();
     this.jwtSecret = process.env.JWT_SECRET || "bovhoeivfoebwfvbeifpwbqe";
+    this.refreshSecret =
+      process.env.REFRESH_SECRET || "bovhoeivfoebwfvbeifpwbqe";
   }
 
   public register = async (req: TypedRequestBody<User>, res: Response) => {
     try {
-
       const data: User = req.body;
 
       if (!data.name || !data.email || !data.password) {
@@ -27,7 +39,9 @@ export class AuthController {
 
       const existingUser = await this.authService.getUserByEmail(data.email);
       if (existingUser) {
-        ResponseFormatter.validationError(res, { email: "Email already exists" });
+        ResponseFormatter.validationError(res, {
+          email: "Email already exists",
+        });
       }
 
       const hashedPassword = await argon2.hash(data.password);
@@ -40,13 +54,18 @@ export class AuthController {
       const user = await this.authService.registereUser(newUser);
 
       if (!user) {
-        ResponseFormatter.validationError(res, { email: "User creation failed" });
+        ResponseFormatter.validationError(res, {
+          email: "User creation failed",
+        });
       }
 
       // Remove password from the response
       const { password, ...userWithoutPassword } = user.toObject();
-      ResponseFormatter.success(res, userWithoutPassword, "User created successfully");
-
+      ResponseFormatter.success(
+        res,
+        userWithoutPassword,
+        "User created successfully"
+      );
     } catch (err) {
       logger.error("Create user failed:", err);
       res.status(500).json({ message: "Internal server error" });
@@ -63,40 +82,148 @@ export class AuthController {
 
       const user = await this.authService.getUserByEmail(email);
       if (!user) {
-        ResponseFormatter.validationError(res, { email: "Invalid credentials" });
+        ResponseFormatter.validationError(res, {
+          email: "Invalid credentials",
+        });
         return;
       }
 
       const isPasswordValid = await argon2.verify(user.password, password);
       if (!isPasswordValid) {
-        ResponseFormatter.validationError(res, { email: "Invalid credentials" });
+        ResponseFormatter.validationError(res, {
+          email: "Invalid credentials",
+        });
       }
 
-      const token = jwt.sign({ id: user._id, role: user.role }, this.jwtSecret, { expiresIn: "1h" });
-      res.cookie("token", token, { httpOnly: true, secure: true }); 1
-      res.cookie("user", JSON.stringify(user), { httpOnly: true, secure: true });
-      res.cookie("role", user.role, { httpOnly: true, secure: true });
+      const accessToken = this.generateAccessToken(user);
+      const refreshToken = this.generateRefreshToken(user);
 
-      // Remove password from the response
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 15 * 60 * 1000,
+      });
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
       const { password: _, ...userWithoutPassword } = user.toObject();
       ResponseFormatter.success(res, userWithoutPassword, "Login successful");
-
     } catch (err) {
       logger.error("Login failed:", err);
       res.status(500).json({ message: "Internal server error" });
     }
-  }
+  };
+
+  public refresh = async (req: Request, res: Response) => {
+    try {
+      const token = req.cookies.refreshToken;
+
+      if (!token) {
+        res.status(401).json({ message: "No refresh token" });
+        return;
+      }
+
+      const payload = jwt.verify(token, this.refreshSecret) as { id: string };
+      const user = await this.authService.getUserById(payload.id);
+
+      if (!user) throw new Error("User not found");
+      if (!user) {
+        res.status(401).json({ message: "Invalid refresh token" });
+        return;
+      }
+
+      const newAccessToken = this.generateAccessToken(user);
+
+      res.cookie("accessToken", newAccessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 15 * 60 * 1000,
+      });
+
+      ResponseFormatter.success(
+        res,
+        { accessToken: newAccessToken },
+        "Token refreshed"
+      );
+    } catch (err) {
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
+
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
+
+      logger.error("Token refresh failed:", err);
+      res.status(401).json({ message: "Session expired" });
+      return;
+    }
+  };
 
   public logout = async (req: Request, res: Response) => {
     try {
-      res.clearCookie("token");
-      res.clearCookie("user");
-      res.clearCookie("role");
-      ResponseFormatter.success(res, {}, "Logout successful");
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      });
+
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      });
+
+      res.status(200).json({ message: "Logged out successfully" });
+      return;
     } catch (err) {
-      logger.error("Logout failed:", err);
+      console.error("Logout error:", err);
+      res.status(500).json({ message: "Logout failed" });
+      return;
+    }
+  };
+
+  public me = async (req: Request, res: Response) => {
+    try {
+      const token = req.cookies.refreshToken;
+
+      console.log("Token in me accessToken:", req.cookies.accessToken);
+      console.log("Token in me refreshToken:", req.cookies.refreshToken);
+
+      res.status(200).json({
+        accessToken: req.cookies.accessToken,
+        refreshToken: req.cookies.refreshToken,
+      });
+      return;
+
+      if (!token) {
+        res.status(401).json({ message: "No refresh token" });
+        return;
+      }
+
+      const payload = jwt.verify(token, this.refreshSecret) as { id: string };
+      const user = await this.authService.getUserById(payload.id);
+      if (!user) {
+        res.status(401).json({ message: "Invalid refresh token" });
+        return;
+      }
+
+      // const { password: _, ...userWithoutPassword } = user.toObject();
+      // ResponseFormatter.success(res, userWithoutPassword, "Fetch user");
+    } catch (err) {
+      logger.error("Fetch user failed:", err);
       res.status(500).json({ message: "Internal server error" });
     }
-  }
-
+  };
 }

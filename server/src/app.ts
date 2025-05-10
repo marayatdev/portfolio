@@ -4,6 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import bodyParser from "body-parser";
 import path from "path";
+import cookieParser from "cookie-parser";
 import fs from "fs";
 import { logger } from "./utils/logger";
 import { connectDB } from "./config/db";
@@ -22,6 +23,7 @@ class App {
     this.app.use(morgan("dev"));
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(cookieParser());
 
     this.app.use("/api/health", (_, res) => {
       res.json({ status: "ok" });

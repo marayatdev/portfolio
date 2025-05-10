@@ -4,9 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@types/set-cookie-parser": "^2.4.10",
     "argon2": "^0.43.0",
     "body-parser": "^2.2.0",
     "chalk": "4",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
     "@types/chalk": "^2.2.4",
+    "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
