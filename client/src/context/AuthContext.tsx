@@ -1,6 +1,6 @@
 // context/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '@/lib/axios';
 
 interface User {
   id: string;
@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkAuth = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/api/auth/me', { withCredentials: true });
+      const res = await api.get('/auth/me');
 
       if (res.data.data) {
 
@@ -46,8 +46,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // login จะตั้ง cookie อัตโนมัติถ้า server ทำถูก
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      await axios.post(
-        '/api/auth/login',
+      await api.post(
+        '/auth/login',
         { email, password },
         { withCredentials: true }
       );
@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await axios.post('/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout', {}, { withCredentials: true });
       setUser(null);
     } catch (err) {
       console.error('Logout failed', err);
