@@ -19,7 +19,9 @@ export class AuthController {
   };
 
   private generateRefreshToken = (user: User) => {
-    return jwt.sign({ id: user.id }, this.refreshSecret, { expiresIn: "2m" }); // อายุยาว
+    return jwt.sign({ id: user.id, role: user.role }, this.refreshSecret, {
+      expiresIn: "7d",
+    });
   };
 
   constructor() {
