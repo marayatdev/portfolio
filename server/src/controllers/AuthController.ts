@@ -198,15 +198,6 @@ export class AuthController {
     try {
       const token = req.cookies.refreshToken;
 
-      console.log("Token in me accessToken:", req.cookies.accessToken);
-      console.log("Token in me refreshToken:", req.cookies.refreshToken);
-
-      res.status(200).json({
-        accessToken: req.cookies.accessToken,
-        refreshToken: req.cookies.refreshToken,
-      });
-      return;
-
       if (!token) {
         res.status(401).json({ message: "No refresh token" });
         return;
@@ -219,8 +210,8 @@ export class AuthController {
         return;
       }
 
-      // const { password: _, ...userWithoutPassword } = user.toObject();
-      // ResponseFormatter.success(res, userWithoutPassword, "Fetch user");
+      const { password: _, ...userWithoutPassword } = user.toObject();
+      ResponseFormatter.success(res, userWithoutPassword, "Fetch user");
     } catch (err) {
       logger.error("Fetch user failed:", err);
       res.status(500).json({ message: "Internal server error" });
