@@ -13,7 +13,7 @@ export class AuthService {
     name: string;
     email: string;
     password: string;
-    role?: string;
+    role?: number;
   }) {
     return await UserModel.create(data);
   }

@@ -6,7 +6,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: number;
 }
 
 interface AuthContextType {
@@ -31,6 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (res.data.data) {
 
+        console.log(res.data.data);
         //set data to localstorage
         localStorage.setItem('user', JSON.stringify(res.data.data));
         setUser(res.data.data);

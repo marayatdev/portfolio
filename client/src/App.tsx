@@ -1,33 +1,31 @@
-import { useAuth } from './context/AuthContext';
-
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import routesConfig from "./routes/routes-config";
+import Auth from "@/pages/auth/auth";
+import ProtectedRoute from "./context/ProtectedRoute";
 const App = () => {
 
-
-  const { login, logout, user } = useAuth();
-
-  const handleSubmit = async () => {
-    const success = await login('marayat1gmail.com', 'marayat');
-    if (success) {
-      // redirect to home
-    } else {
-      alert('Login failed');
-    }
-  };
-
-
-
-  const logouts = async () => {
-
-    await logout();
-
-  };
-
   return (
-    <>
-      {user?.email ? <>Hello {user.email}</> : <>Not login</>}
-      <button onClick={handleSubmit}>Login</button>
-      <button onClick={logouts}>logout</button>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Auth />} />
+
+        {routesConfig.map((route, index) => (
+          <Route
+            key={index}
+            path={route.path || ""}
+            element={
+              route.requireRoles ? (
+                <ProtectedRoute requireRoles={route.requireRoles}>
+                  <route.element />
+                </ProtectedRoute>
+              ) : (
+                <route.element />
+              )
+            }
+          />
+        ))}
+      </Routes>
+    </Router>
   );
 };
 export default App;
