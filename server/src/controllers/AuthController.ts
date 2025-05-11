@@ -14,13 +14,13 @@ export class AuthController {
 
   private generateAccessToken = (user: User) => {
     return jwt.sign({ id: user.id, role: user.role }, this.jwtSecret, {
-      expiresIn: "1m",
+      expiresIn: "15m",
     });
   };
 
   private generateRefreshToken = (user: User) => {
     return jwt.sign({ id: user.id, role: user.role }, this.refreshSecret, {
-      expiresIn: "5m",
+      expiresIn: "7d",
     });
   };
 

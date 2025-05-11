@@ -23,7 +23,8 @@ export const authMiddleware = async (
     const accessToken = req.cookies.accessToken;
     if (!accessToken) {
       // ถ้าไม่มี accessToken จะพยายามใช้ refreshToken
-      return res.status(401).json({ message: "No access token found" });
+      res.status(401).json({ message: "No access token found" });
+      return;
     }
 
     // ตรวจสอบว่า accessToken valid หรือไม่
@@ -38,7 +39,8 @@ export const authMiddleware = async (
       // ถ้า accessToken หมดอายุ จะพยายามใช้ refreshToken เพื่อขอ Access Token ใหม่
       const refreshToken = req.cookies.refreshToken;
       if (!refreshToken) {
-        return res.status(401).json({ message: "No refresh token found" });
+        res.status(401).json({ message: "No refresh token found" });
+        return;
       }
 
       // ถ้า refreshToken มี ก็ตรวจสอบว่า valid หรือไม่
@@ -72,13 +74,15 @@ export const authMiddleware = async (
         res.clearCookie("accessToken");
         res.clearCookie("refreshToken");
         logger.error("Token refresh failed:", err);
-        return res
+        res
           .status(401)
           .json({ message: "Session expired, please login again" });
+        return;
       }
     }
   } catch (err) {
     logger.error("Auth middleware error:", err);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
+    return;
   }
 };

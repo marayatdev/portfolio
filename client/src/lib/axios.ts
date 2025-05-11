@@ -43,7 +43,7 @@ api.interceptors.response.use(
 
       try {
         // เรียกใช้ API /auth/refresh เพื่อ refresh token
-        const response = await api.get('/auth/refresh');
+        const response = await api.post('/auth/refresh');
         const newAccessToken = response.data.data.accessToken;
 
         // ตั้งค่า Authorization headers ใหม่กับ access token ที่ได้รับมา
