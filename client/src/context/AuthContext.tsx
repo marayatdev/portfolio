@@ -30,13 +30,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await api.get('/auth/me');
 
       if (res.data.data) {
-
         console.log(res.data.data);
         //set data to localstorage
         localStorage.setItem('user', JSON.stringify(res.data.data));
         setUser(res.data.data);
       }
-
     } catch (err) {
       setUser(null);
     } finally {
@@ -47,11 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // login จะตั้ง cookie อัตโนมัติถ้า server ทำถูก
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      await api.post(
-        '/auth/login',
-        { email, password },
-        { withCredentials: true }
-      );
+      await api.post('/auth/login', { email, password }, { withCredentials: true });
       await checkAuth();
       return true;
     } catch (err) {
@@ -60,6 +54,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
+    console.log('logout');
+
     try {
       await api.post('/auth/logout', {}, { withCredentials: true });
       setUser(null);

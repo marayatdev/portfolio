@@ -1,15 +1,14 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import routesConfig from "./routes/routes-config";
-import Auth from "@/pages/auth/auth";
-import ProtectedRoute from "./context/ProtectedRoute";
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import routesConfig from './routes/routes-config';
+import Auth from '@/pages/auth/auth';
+import ProtectedRoute from './context/ProtectedRoute';
 const App = () => {
-
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Auth />} />
 
-        {routesConfig.map((route, index) => (
+        {/* {routesConfig.map((route, index) => (
           <Route
             key={index}
             path={route.path || ""}
@@ -23,7 +22,7 @@ const App = () => {
               )
             }
           />
-        ))}
+        ))} */}
       </Routes>
     </Router>
   );
