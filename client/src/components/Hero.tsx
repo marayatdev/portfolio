@@ -15,9 +15,7 @@ const Hero: React.FC = () => {
             I build things for the web.
           </h2>
           <p className="text-slate text-lg mb-8 max-w-xl">
-            I'm a software developer specializing in building (and occasionally designing)
-            exceptional digital experiences. Currently, I'm focused on building accessible,
-            human-centered products.
+            I'm a junior software developer with a passion for building user-friendly and accessible digital experiences. I'm currently focused on learning best practices and contributing to projects that put people first.
           </p>
           <div className="flex flex-wrap gap-4">
             <Button className="bg-transparent border border-teal text-teal hover:bg-teal/10 group">

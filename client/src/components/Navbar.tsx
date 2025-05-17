@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from '@/context/AuthContext';
+import axios from 'axios';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -33,6 +35,22 @@ const Navbar: React.FC = () => {
     { name: 'Contact', href: '#contact' },
   ];
 
+  const fetchPdf = async () => {
+    try {
+      const response = await axios.get('/api/pdf', {
+        responseType: 'blob',
+      });
+
+      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      window.open(pdfUrl, '_blank');
+    } catch (error) {
+      console.log("Error fetching PDF:", error);
+    }
+  };
+
+
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-navy/90 shadow-lg backdrop-blur-sm' : 'bg-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,24 +58,24 @@ const Navbar: React.FC = () => {
           <div className="flex-shrink-0">
             <a href="#" className="text-teal font-bold text-2xl">Dev<span className="text-slate-light">Portfolio</span></a>
           </div>
-          
+
           <div className="hidden md:flex items-center space-x-8">
             <nav className="flex items-center space-x-6">
               {navLinks.map((link, index) => (
-                <a 
-                  key={link.name} 
-                  href={link.href} 
+                <a
+                  key={link.name}
+                  href={link.href}
                   className="link-underline transition-colors duration-300"
                 >
-                  <span className="text-teal mr-1 text-sm">{index + 1}.</span> {link.name}
+                  {link.name}
                 </a>
               ))}
             </nav>
-            <Button className="bg-transparent border border-teal text-teal hover:bg-teal/10">
+            <Button onClick={fetchPdf} className="bg-transparent border border-teal text-teal hover:bg-teal/10">
               Resume
             </Button>
           </div>
-          
+
           <div className="md:hidden">
             <Button onClick={toggleMenu} variant="ghost" size="icon">
               <Menu className="text-teal" />
@@ -65,7 +83,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile menu */}
       <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'} bg-navy-light border-t border-navy-light`}>
         <div className="px-2 pt-2 pb-3 space-y-1">
@@ -76,7 +94,7 @@ const Navbar: React.FC = () => {
               className="block px-3 py-2 text-base font-medium text-slate-light hover:text-teal transition-colors duration-300"
               onClick={toggleMenu}
             >
-              <span className="text-teal mr-1 text-sm">{index + 1}.</span> {link.name}
+              {link.name}
             </a>
           ))}
           <div className="px-3 py-2">

@@ -10,9 +10,9 @@ import Footer from '../components/Footer';
 
 const Index = () => {
   useEffect(() => {
-    document.title = "John Doe | Software Developer";
+    document.title = "Marayat Dev | Software Developer";
   }, []);
-  
+
   return (
     <div className="min-h-screen">
       <Navbar />
