@@ -17,7 +17,7 @@ const Skills: React.FC = () => {
     },
     {
       title: "Tools & Others",
-      skills: ["Git", "GitLab", "Docker", "VS Code", "RESTful APIs"]
+      skills: ["Git", "GitLab", "Docker", "Nginx", "RESTful APIs"]
     }
   ];
 
@@ -25,10 +25,10 @@ const Skills: React.FC = () => {
     <section id="skills" className="py-20 bg-navy-light">
       <div className="section-container">
         <h2 className="section-title">Skills</h2>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-10">
           {skillCategories.map((category) => (
-            <div 
+            <div
               key={category.title}
               className="bg-navy p-6 rounded-lg shadow-lg border border-navy-light hover:border-teal/30 transition-all duration-300"
             >
@@ -43,10 +43,10 @@ const Skills: React.FC = () => {
             </div>
           ))}
         </div>
-        
+
         <div className="mt-16 text-center">
           <p className="text-slate text-lg max-w-2xl mx-auto">
-            I'm constantly learning and exploring new technologies to expand my skill set 
+            I'm constantly learning and exploring new technologies to expand my skill set
             and stay up-to-date with industry trends.
           </p>
         </div>

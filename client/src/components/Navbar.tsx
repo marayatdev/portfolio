@@ -72,7 +72,7 @@ const Navbar: React.FC = () => {
               ))}
             </nav>
             <Button onClick={fetchPdf} className="bg-transparent border border-teal text-teal hover:bg-teal/10">
-              Resume
+              Get Resume
             </Button>
           </div>
 

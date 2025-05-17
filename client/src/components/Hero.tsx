@@ -15,12 +15,16 @@ const Hero: React.FC = () => {
             I build things for the web.
           </h2>
           <p className="text-slate text-lg mb-8 max-w-xl">
-            I'm a junior software developer with a passion for building user-friendly and accessible digital experiences. I'm currently focused on learning best practices and contributing to projects that put people first.
+            This DevPortfolio was built with React, Tailwind CSS,
+            Node.js, and MongoDB. It's containerized using Docker and deployed with CI/CD pipelines via GitLab,
+            using Nginx as the web server. The application is hosted on an AWS EC2 instance.
           </p>
-          <div className="flex flex-wrap gap-4">
+          {/*  <div className="flex flex-wrap gap-4">
             <Button className="bg-transparent border border-teal text-teal hover:bg-teal/10 group">
-              Check out my work
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <a href="#projects">
+                Check out my work
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </a>
             </Button>
             <Button
               variant="ghost"
@@ -28,7 +32,7 @@ const Hero: React.FC = () => {
             >
               Get in touch
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>
