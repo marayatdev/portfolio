@@ -21,7 +21,7 @@ class App {
   private setMiddlewares(): void {
     this.app.use(
       cors({
-        origin: "http://localhost:5173", // หรือ frontend ของคุณ
+        origin: "http://172.20.112.1:3000", // หรือ frontend ของคุณ
         credentials: true,
       })
     );

@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkAuth = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/auth/me');
+      const res = await api.get('/auth/me', { withCredentials: true });
 
       if (res.data.data) {
         console.log(res.data.data);
