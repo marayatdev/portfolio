@@ -1,0 +1,46 @@
+version: "3"
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: server:latest
+    restart: always
+    environment:
+      - PORT=8000
+      - MONGO_URI=mongodb+srv://marayat:marayat@cluster0.hbazy.mongodb.net/starter-project-react?retryWrites=true&w=majority
+    networks:
+      - my_network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: client:latest
+    environment:
+      - API_URL=http://server:8000
+    restart: always
+    networks:
+      - my_network
+
+  reverse-proxy:
+    image: nginx:latest
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+      - client
+    restart: always
+    networks:
+      - my_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  my_network:
+    driver: bridge

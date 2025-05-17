@@ -20,9 +20,9 @@
     "tsconfig-paths": "^4.2.0"
   },
   "scripts": {
-    "dev": "nodemon",
-    "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node -r tsconfig-paths/register dist/server.js",
+    "dev": "nodemon --watch src --exec ts-node src/server.ts",
+    "build": "rm -rf dist && tsc  && tsc-alias"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
@@ -39,6 +39,7 @@
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.8.3"
   }
 }
