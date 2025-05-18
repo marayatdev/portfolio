@@ -4,7 +4,6 @@ WORKDIR /usr/src/app
 COPY package.json .
 COPY yarn.lock .
 COPY tsconfig.json ./
-COPY data ./data
 
 RUN yarn install
 
