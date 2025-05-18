@@ -4,6 +4,7 @@ WORKDIR /usr/src/app
 COPY package.json .
 COPY yarn.lock .
 COPY tsconfig.json ./
+COPY data ./data
 
 RUN yarn install
 
@@ -18,6 +19,7 @@ ENV NODE_ENV production
 WORKDIR /usr/src/app
 
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/data ./data
 COPY --chown=node:node --from=build /usr/src/app/.env .env
 COPY --chown=node:node --from=build /usr/src/app/package.json .
 COPY --chown=node:node --from=build /usr/src/app/yarn.lock .

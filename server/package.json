@@ -22,7 +22,7 @@
   "scripts": {
     "start": "node -r tsconfig-paths/register dist/server.js",
     "dev": "nodemon --watch src --exec ts-node src/server.ts",
-    "build": "rm -rf dist && tsc  && tsc-alias"
+    "build": "rm -rf dist && tsc && tsc-alias && cp -r data dist/data"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
