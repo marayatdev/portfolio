@@ -4,6 +4,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
+import api from '@/lib/axios';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -37,7 +38,7 @@ const Navbar: React.FC = () => {
 
   const fetchPdf = async () => {
     try {
-      const response = await axios.get('/api/pdf', {
+      const response = await api.get('/pdf', {
         responseType: 'blob',
       });
 

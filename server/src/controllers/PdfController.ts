@@ -6,7 +6,9 @@ import fs from "fs";
 export class PdfController {
   public getPdf = async (req: Request, res: Response) => {
     try {
-      const pdfPath = path.resolve(__dirname, "../data/Resume_.pdf");
+      const pdfPath = path.join(process.cwd(), "data", "Resume_.pdf");
+
+      console.log("PDF Path:", pdfPath);
 
       if (!fs.existsSync(pdfPath)) {
         res.status(404).json({ message: "PDF not found" });
