@@ -15,9 +15,9 @@ const Hero: React.FC = () => {
             I build things for the web.
           </h2>
           <p className="text-slate text-lg mb-8 max-w-xl">
-            This DevPortfolio was built with React, Tailwind CSS, Node.js, and MongoDB. It's
-            containerized using Docker and deployed with CI/CD pipelines via GitLab, using Nginx as
-            the web server. The application is hosted on an AWS EC2 instance.
+            This DevPortfolio was built with React, Tailwind CSS, Node.js, and MongoDB.
+            It's containerized using Docker and deployed with CI/CD pipelines via GitLab,
+            using Nginx as the web server. The application is hosted on an Azure Virtual Machine instance.
           </p>
           {/*  <div className="flex flex-wrap gap-4">
             <Button className="bg-transparent border border-teal text-teal hover:bg-teal/10 group">
