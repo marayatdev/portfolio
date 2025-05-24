@@ -80,6 +80,7 @@ export class AuthController {
 
       if (!email || !password) {
         ResponseFormatter.notFound(res, "Missing required fields");
+        return;
       }
 
       const user = await this.authService.getUserByEmail(email);
@@ -102,14 +103,14 @@ export class AuthController {
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: true,
+        secure: false,
         sameSite: "strict",
         maxAge: 15 * 60 * 1000,
       });
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true,
+        secure: false,
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });

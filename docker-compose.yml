@@ -4,7 +4,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    image: server:latest
+    image: marayat/server:latest
     restart: always
     environment:
       - PORT=8000
@@ -16,7 +16,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: client:latest
+    image: marayat/client:latest
     environment:
       - API_URL=http://server:8000
     restart: always
