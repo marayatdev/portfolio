@@ -23,6 +23,8 @@ COPY --chown=node:node --from=build /usr/src/app/data ./data
 COPY --chown=node:node --from=build /usr/src/app/.env .env
 COPY --chown=node:node --from=build /usr/src/app/package.json .
 COPY --chown=node:node --from=build /usr/src/app/yarn.lock .
+COPY --chown=node:node --from=build /usr/src/app/tsconfig.json ./tsconfig.json
+
 
 RUN yarn install --production
 
