@@ -169,7 +169,7 @@ const Auth = () => {
                   <Button
                     type="submit"
                     disabled={isRegisterSubmitting}
-                    className="w-full px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 disabled:bg-green-300 transition-all duration-200 transform hover:scale-[1.01]"
+                    className="w-full px-4 py-2 text-white bg-[#112240] rounded-lg hover:bg-green-600 disabled:bg-green-300 transition-all duration-200 transform hover:scale-[1.01]"
                   >
                     {isRegisterSubmitting ? 'Creating Account...' : 'Sign Up'}
                   </Button>
