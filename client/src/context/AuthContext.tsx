@@ -14,6 +14,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  register: (email: string, password: string, name?: string) => Promise<boolean>;
   checkAuth: () => Promise<void>;
 }
 
@@ -53,6 +54,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const registerUser = async (email: string, password: string, name?: string): Promise<boolean> => {
+    try {
+      const response = await api.post(
+        '/auth/register',
+        { email, password, name },
+        { withCredentials: true }
+      );
+      console.log('register response', response.data.success);
+      if (
+        response.data &&
+        (response.data.success || response.status === 200 || response.status === 201)
+      ) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Registration failed', err);
+      return false;
+    }
+  };
+
   const logout = async () => {
     console.log('logout');
 
@@ -69,7 +91,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, checkAuth }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, logout, register: registerUser, checkAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );
