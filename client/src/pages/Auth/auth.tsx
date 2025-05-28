@@ -80,14 +80,14 @@ const Auth = () => {
       <div className="w-full max-w-md p-4 sm:p-8 space-y-5 bg-white rounded-xl shadow-sm transition-all hover:shadow-md mx-4">
         <div className="text-center">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            {user ? 'Welcome' : isRegisterMode ? 'Sign Up' : 'Sign In'}
+            {user ? 'Welcome' : isRegisterMode ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
           </h1>
           <h2 className="mt-2 text-base sm:text-lg text-gray-600">
             {user
-              ? `Logged in as: ${user.email}`
+              ? `เข้าสู่ระบบโดย : ${user.email}`
               : isRegisterMode
-              ? 'Create your account'
-              : 'Please log in to continue'}
+              ? 'สร้างบัญชีใหม่เพื่อเริ่มต้น'
+              : 'กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ'}
           </h2>
         </div>
 
