@@ -90,7 +90,7 @@ const Contact: React.FC = () => {
 
               <div>
                 <h3 className="text-xl font-semibold text-slate-light mb-2">Location</h3>
-                <p className="text-slate">San Francisco, California</p>
+                <p className="text-slate">Suphanburi, Thailand</p>
               </div>
 
               <div className="pt-6">
