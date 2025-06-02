@@ -2,7 +2,7 @@
 
 # --------- Config ---------
 USERNAME="marayat"
-TAG="latest"
+TAG="v.1.0.1"
 
 # --------- Image names ---------
 SERVER_IMAGE="$USERNAME/server:$TAG"
