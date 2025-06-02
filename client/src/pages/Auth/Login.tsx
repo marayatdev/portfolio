@@ -1,8 +1,10 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import LoginForm from '@/components/auth/LoginForm';
+import RegisterForm from '@/components/auth/RegisterForm';
+import UpdateUserForm from '@/components/auth/UpdateUserForm';
+import UserProfile from '@/components/auth/UserProfile';
 import { useAuth } from '@/context/AuthContext';
+import api from '@/lib/axios';
 import { LoginFormData } from '@/types/Auth';
-import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 
 interface RegisterFormData {
@@ -12,33 +14,25 @@ interface RegisterFormData {
     name?: string;
 }
 
+interface UpdateUserFormData {
+    id?: string;
+    name?: string;
+    email: string;
+    currentPassword?: string;
+    newPassword?: string;
+    confirmNewPassword?: string;
+}
+
 const Login = () => {
     const { login, logout, user, register: registerUser } = useAuth();
     const [isRegisterMode, setIsRegisterMode] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
 
-    const {
-        register: registerLogin,
-        handleSubmit: handleSubmitLogin,
-        formState: { errors: loginErrors, isSubmitting: isLoginSubmitting },
-        reset: resetLogin,
-    } = useForm<LoginFormData>();
-
-    const {
-        register: registerSignup,
-        handleSubmit: handleSubmitSignup,
-        formState: { errors: registerErrors, isSubmitting: isRegisterSubmitting },
-        reset: resetRegister,
-        watch,
-    } = useForm<RegisterFormData>();
-
-    const watchPassword = watch('password');
-
-    const onLoginSubmit = async (data: LoginFormData) => {
+    const handleLogin = async (data: LoginFormData) => {
         try {
             const success = await login(data.email, data.password);
             if (success) {
                 console.log('success', success);
-                resetLogin();
             } else {
                 alert('Login failed');
             }
@@ -48,15 +42,13 @@ const Login = () => {
         }
     };
 
-    const onRegisterSubmit = async (data: RegisterFormData) => {
+    const handleRegister = async (data: RegisterFormData) => {
         try {
             const success = await registerUser(data.email, data.password, data.name);
-
             console.log('submitting register', data, success);
 
             if (success) {
                 console.log('✅ Registration success');
-                resetRegister();
                 setIsRegisterMode(false);
                 alert('Registration successful! Please login.');
             } else {
@@ -69,168 +61,106 @@ const Login = () => {
         }
     };
 
+    const handleUpdateUser = async (data: UpdateUserFormData) => {
+        try {
+            const success = await api.put(`/users/${user._id}`, data, { withCredentials: true });
+            console.log('updating user', data, success);
+
+            if (success) {
+                console.log('✅ Update success');
+                setIsEditMode(false);
+                alert('อัพเดทข้อมูลสำเร็จ!');
+            } else {
+                console.log('❌ Update failed');
+                alert('อัพเดทข้อมูลไม่สำเร็จ');
+            }
+        } catch (error) {
+            console.error('Update error:', error);
+            alert('อัพเดทข้อมูลไม่สำเร็จ');
+        }
+    };
+
     const toggleMode = () => {
         setIsRegisterMode(!isRegisterMode);
-        resetLogin();
-        resetRegister();
+        setIsEditMode(false);
+    };
+
+    const handleEditProfile = () => {
+        setIsEditMode(true);
+        setIsRegisterMode(false);
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditMode(false);
+    };
+
+    const getTitle = () => {
+        if (isEditMode) return 'แก้ไขข้อมูล';
+        if (user) return 'Welcome';
+        return isRegisterMode ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ';
+    };
+
+    const getSubtitle = () => {
+        if (isEditMode) return 'อัพเดทข้อมูลส่วนตัวของคุณ';
+        if (user) return `เข้าสู่ระบบโดย : ${user.email}`;
+        return isRegisterMode
+            ? 'สร้างบัญชีใหม่เพื่อเริ่มต้น'
+            : 'กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ';
+    };
+
+    const renderContent = () => {
+        if (isEditMode && user) {
+            return (
+                <UpdateUserForm
+                    user={user}
+                    onSubmit={handleUpdateUser}
+                    onCancel={handleCancelEdit}
+                />
+            );
+        }
+
+        if (user) {
+            return (
+                <UserProfile
+                    user={user}
+                    onLogout={logout}
+                    onEditProfile={handleEditProfile}
+                />
+            );
+        }
+
+        if (isRegisterMode) {
+            return (
+                <RegisterForm
+                    onSubmit={handleRegister}
+                    onToggleMode={toggleMode}
+                />
+            );
+        }
+
+        return (
+            <LoginForm
+                onSubmit={handleLogin}
+                onToggleMode={toggleMode}
+            />
+        );
     };
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
             <div className="w-full max-w-md p-4 sm:p-8 space-y-5 bg-white rounded-xl shadow-sm transition-all hover:shadow-md mx-4">
-                <div className="text-center">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-                        {user ? 'Welcome' : isRegisterMode ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
-                    </h1>
-                    <h2 className="mt-2 text-base sm:text-lg text-gray-600">
-                        {user
-                            ? `เข้าสู่ระบบโดย : ${user.email}`
-                            : isRegisterMode
-                                ? 'สร้างบัญชีใหม่เพื่อเริ่มต้น'
-                                : 'กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ'}
-                    </h2>
-                </div>
+                {!isEditMode && (
+                    <div className="text-center">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+                            {getTitle()}
+                        </h1>
+                        <h2 className="mt-2 text-base sm:text-lg text-gray-600">
+                            {getSubtitle()}
+                        </h2>
+                    </div>
+                )}
 
-                <div className="space-y-3 sm:space-y-4">
-                    {user ? (
-                        <Button
-                            onClick={logout}
-                            className="w-full px-4 py-2 text-white bg-gray-400 rounded-lg hover:bg-gray-500 transition-all duration-200 transform hover:scale-[1.01]"
-                        >
-                            Logout
-                        </Button>
-                    ) : (
-                        <>
-                            {isRegisterMode ? (
-                                <form onSubmit={handleSubmitSignup(onRegisterSubmit)} className="space-y-4">
-                                    <div>
-                                        <Input
-                                            type="text"
-                                            placeholder="Full Name (Optional)"
-                                            {...registerSignup('name')}
-                                            className="bg-white"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <Input
-                                            type="email"
-                                            placeholder="Email"
-                                            {...registerSignup('email', {
-                                                required: 'Email is required',
-                                                pattern: {
-                                                    value: /^\S+@\S+$/i,
-                                                    message: 'Invalid email address',
-                                                },
-                                            })}
-                                            className="bg-white"
-                                        />
-                                        {registerErrors.email && (
-                                            <p className="mt-1 text-sm text-red-600">{registerErrors.email.message}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <Input
-                                            type="password"
-                                            placeholder="Password"
-                                            {...registerSignup('password', {
-                                                required: 'Password is required',
-                                                minLength: {
-                                                    value: 6,
-                                                    message: 'Password must be at least 6 characters',
-                                                },
-                                            })}
-                                            className="bg-white"
-                                        />
-                                        {registerErrors.password && (
-                                            <p className="mt-1 text-sm text-red-600">{registerErrors.password.message}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <Input
-                                            type="password"
-                                            placeholder="Confirm Password"
-                                            {...registerSignup('confirmPassword', {
-                                                required: 'Please confirm your password',
-                                                validate: (value) => value === watchPassword || 'Passwords do not match',
-                                            })}
-                                            className="bg-white"
-                                        />
-                                        {registerErrors.confirmPassword && (
-                                            <p className="mt-1 text-sm text-red-600">
-                                                {registerErrors.confirmPassword.message}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <Button
-                                        type="submit"
-                                        disabled={isRegisterSubmitting}
-                                        className="w-full px-4 py-2 text-white bg-[#112240] rounded-lg hover:bg-green-600 disabled:bg-green-300 transition-all duration-200 transform hover:scale-[1.01]"
-                                    >
-                                        {isRegisterSubmitting ? 'Creating Account...' : 'Sign Up'}
-                                    </Button>
-                                </form>
-                            ) : (
-                                // Login Form
-                                <form onSubmit={handleSubmitLogin(onLoginSubmit)} className="space-y-4">
-                                    <div>
-                                        <Input
-                                            type="email"
-                                            placeholder="Email"
-                                            {...registerLogin('email', {
-                                                required: 'Email is required',
-                                                pattern: {
-                                                    value: /^\S+@\S+$/i,
-                                                    message: 'Invalid email address',
-                                                },
-                                            })}
-                                            className="bg-white"
-                                        />
-                                        {loginErrors.email && (
-                                            <p className="mt-1 text-sm text-red-600">{loginErrors.email.message}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <Input
-                                            type="password"
-                                            placeholder="Password"
-                                            {...registerLogin('password', {
-                                                required: 'Password is required',
-                                                minLength: {
-                                                    value: 6,
-                                                    message: 'Password must be at least 6 characters',
-                                                },
-                                            })}
-                                            className="bg-white"
-                                        />
-                                        {loginErrors.password && (
-                                            <p className="mt-1 text-sm text-red-600">{loginErrors.password.message}</p>
-                                        )}
-                                    </div>
-
-                                    <Button
-                                        type="submit"
-                                        disabled={isLoginSubmitting}
-                                        className="w-full px-4 py-2 text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 disabled:bg-indigo-300 transition-all duration-200 transform hover:scale-[1.01]"
-                                    >
-                                        {isLoginSubmitting ? 'Logging in...' : 'เข้าสู่ระบบ'}
-                                    </Button>
-                                </form>
-                            )}
-
-                            <p
-                                onClick={toggleMode}
-                                className="text-center text-base sm:text-lg text-gray-600 underline cursor-pointer hover:text-indigo-600 transition-colors"
-                            >
-                                {isRegisterMode ? 'กลับเข้าสู่ระบบ' : 'สมัครสมาชิก'}
-                            </p>
-                        </>
-                    )}
-                </div>
+                {renderContent()}
             </div>
         </div>
     );

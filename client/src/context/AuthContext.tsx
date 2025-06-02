@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import api from '@/lib/axios';
 
 interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   role: number;
