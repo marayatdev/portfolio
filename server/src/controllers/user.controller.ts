@@ -70,8 +70,8 @@ export class UserController {
         return;
       }
 
-      if (data.password) {
-        data.password = await argon2.hash(data.password);
+      if (data.newPassword) {
+        data.password = await argon2.hash(data.newPassword);
       }
 
       const user = await this.userService.updateUserById(userId, data);
@@ -99,6 +99,37 @@ export class UserController {
       ResponseFormatter.success(res, {}, "User deleted");
     } catch (err) {
       logger.error("deleteUserById failed", err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  public checkCurrentPassword = async (req: Request, res: Response) => {
+    try {
+      const userId = req.params.id;
+      const { password } = req.body;
+
+      if (!userId) {
+        res.status(400).json({ message: "User ID is required" });
+        return;
+      }
+
+      const user = await this.userService.readUserById(userId);
+
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      const isPasswordValid = await argon2.verify(user.password, password);
+
+      if (!isPasswordValid) {
+        res.status(401).json({ message: "รหัสผ่านเดิมไม่ถูกต้อง" });
+        return;
+      }
+
+      ResponseFormatter.success(res, {}, "Password is valid");
+    } catch (err) {
+      logger.error("checkCurrentPassword failed", err);
       res.status(500).json({ message: "Internal server error" });
     }
   };

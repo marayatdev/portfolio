@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import api from '@/lib/axios';
 
 interface User {
-    id?: string;
+    _id?: string;
     email: string;
     name?: string;
 }
@@ -38,24 +39,84 @@ const UpdateUserForm = ({
         reset,
         watch,
         setValue,
+        setError,
+        clearErrors,
     } = useForm<UpdateUserFormData>();
 
+    const [passwordCheckError, setPasswordCheckError] = useState<string>('');
+
+    console.log(user._id);
+
     const watchNewPassword = watch('newPassword');
+    const watchCurrentPassword = watch('currentPassword');
 
     useEffect(() => {
         setValue('email', user.email);
         setValue('name', user.name || '');
     }, [user, setValue]);
 
-    const handleFormSubmit = async (data: UpdateUserFormData) => {
-        const submitData = { ...data };
-        if (!data.newPassword) {
-            delete submitData.currentPassword;
-            delete submitData.newPassword;
-            delete submitData.confirmNewPassword;
+    useEffect(() => {
+        if (watchCurrentPassword && passwordCheckError) {
+            setPasswordCheckError('');
         }
+    }, [watchCurrentPassword, passwordCheckError]);
 
-        await onSubmit(submitData);
+    const handleFormSubmit = async (data: UpdateUserFormData) => {
+        try {
+            setPasswordCheckError('');
+
+            const isChangingPassword = data.newPassword && data.newPassword.trim() !== '';
+
+            if (isChangingPassword) {
+                if (!data.currentPassword || data.currentPassword.trim() === '') {
+                    setError('currentPassword', {
+                        type: 'manual',
+                        message: 'กรุณากรอกรหัสผ่านปัจจุบัน'
+                    });
+                    return;
+                }
+
+                try {
+                    const checkCurrentPassword = await api.post(
+                        `/users/check-password/${user._id}`,
+                        { password: data.currentPassword },
+                        { withCredentials: true }
+                    );
+
+                    if (!checkCurrentPassword.data.success) {
+                        setPasswordCheckError('รหัสผ่านปัจจุบันไม่ถูกต้อง');
+                        setError('currentPassword', {
+                            type: 'manual',
+                            message: 'รหัสผ่านปัจจุบันไม่ถูกต้อง'
+                        });
+                        return;
+                    }
+                } catch (passwordError: any) {
+                    console.error('Password check error:', passwordError);
+                    const errorMessage = passwordError.response?.data?.message || 'ไม่สามารถตรวจสอบรหัสผ่านได้';
+                    setPasswordCheckError(errorMessage);
+                    setError('currentPassword', {
+                        type: 'manual',
+                        message: errorMessage
+                    });
+                    return;
+                }
+            }
+
+            const submitData = { ...data };
+            if (!isChangingPassword) {
+                delete submitData.currentPassword;
+                delete submitData.newPassword;
+                delete submitData.confirmNewPassword;
+            }
+
+            await onSubmit(submitData);
+
+        } catch (error: any) {
+            console.error('Update error:', error);
+            const errorMessage = error.response?.data?.message || 'เกิดข้อผิดพลาดในการอัพเดทข้อมูล';
+            alert(errorMessage);
+        }
     };
 
     return (
@@ -122,17 +183,29 @@ const UpdateUserForm = ({
                                 {...register('currentPassword', {
                                     validate: (value) => {
                                         const newPassword = watch('newPassword');
-                                        if (newPassword && !value) {
+                                        if (newPassword && newPassword.trim() !== '' && (!value || value.trim() === '')) {
                                             return 'กรุณากรอกรหัสผ่านปัจจุบัน';
                                         }
                                         return true;
                                     }
                                 })}
-                                className="bg-white"
+                                className={`bg-white ${errors.currentPassword ? 'border-red-500' : ''}`}
+                                onChange={(e) => {
+                                    // Clear errors when user starts typing
+                                    if (passwordCheckError) {
+                                        setPasswordCheckError('');
+                                        clearErrors('currentPassword');
+                                    }
+                                }}
                             />
                             {errors.currentPassword && (
                                 <p className="mt-1 text-sm text-red-600">
                                     {errors.currentPassword.message}
+                                </p>
+                            )}
+                            {passwordCheckError && !errors.currentPassword && (
+                                <p className="mt-1 text-sm text-red-600">
+                                    {passwordCheckError}
                                 </p>
                             )}
                         </div>
@@ -146,7 +219,7 @@ const UpdateUserForm = ({
                                 placeholder="รหัสผ่านใหม่"
                                 {...register('newPassword', {
                                     validate: (value) => {
-                                        if (value && value.length < 6) {
+                                        if (value && value.trim() !== '' && value.length < 6) {
                                             return 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
                                         }
                                         return true;
@@ -171,7 +244,7 @@ const UpdateUserForm = ({
                                 {...register('confirmNewPassword', {
                                     validate: (value) => {
                                         const newPassword = watch('newPassword');
-                                        if (newPassword && value !== newPassword) {
+                                        if (newPassword && newPassword.trim() !== '' && value !== newPassword) {
                                             return 'รหัสผ่านไม่ตรงกัน';
                                         }
                                         return true;

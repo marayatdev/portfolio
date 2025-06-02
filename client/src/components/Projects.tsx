@@ -48,19 +48,23 @@ const Projects: React.FC = () => {
                 }`}
             >
               <div className={`lg:col-span-7 ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
-                <div className="relative group overflow-hidden rounded-lg">
-                  <div className="absolute inset-0 bg-teal/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-auto rounded-lg transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
+                <a href={project.liveUrl} target="_blank" >
+                  <div className="relative group overflow-hidden rounded-lg">
+                    <div className="absolute inset-0 bg-teal/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-auto rounded-lg transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                </a>
               </div>
 
               <div className={`lg:col-span-5 ${index % 2 === 1 ? 'lg:order-1 lg:text-right' : ''}`}>
                 <h3 className="text-teal font-mono mb-2">Featured Project</h3>
-                <h4 className="text-2xl font-bold text-slate-light mb-4">{project.title}</h4>
+                <a href={project.liveUrl} target="_blank" >
+                  <h4 className="text-2xl font-bold text-slate-light mb-4">{project.title}</h4>
+                </a>
 
                 <div className="bg-navy-light p-6 rounded-lg shadow-lg mb-5">
                   <p className="text-slate">{project.description}</p>

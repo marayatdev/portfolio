@@ -20,7 +20,6 @@ interface UpdateUserFormData {
     email: string;
     currentPassword?: string;
     newPassword?: string;
-    confirmNewPassword?: string;
 }
 
 const Login = () => {
