@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { logger } from "@/utils/logger";
-import { MaiService } from "@/services/MailServer";
+import { MaiService } from "@/services/mail.service";
 import { ResponseFormatter } from "@/utils/response";
 import nodemailer from "nodemailer";
 import { MailModel } from "@/models/MailModel";

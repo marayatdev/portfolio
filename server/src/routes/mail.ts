@@ -1,4 +1,4 @@
-import { MailController } from "@/controllers/MailController";
+import { MailController } from "@/controllers/mail.controller";
 import { Router } from "express";
 
 const router = Router();

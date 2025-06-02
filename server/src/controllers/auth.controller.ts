@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AuthService } from "@/services/AuthService";
+import { AuthService } from "@/services/auth.service";
 import { logger } from "@/utils/logger";
 import { TypedRequestBody } from "@/utils/request";
 import { User } from "@/types/auth";
