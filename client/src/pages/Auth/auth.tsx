@@ -86,8 +86,8 @@ const Auth = () => {
             {user
               ? `เข้าสู่ระบบโดย : ${user.email}`
               : isRegisterMode
-              ? 'สร้างบัญชีใหม่เพื่อเริ่มต้น'
-              : 'กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ'}
+                ? 'สร้างบัญชีใหม่เพื่อเริ่มต้น'
+                : 'กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ'}
           </h2>
         </div>
 
@@ -102,7 +102,6 @@ const Auth = () => {
           ) : (
             <>
               {isRegisterMode ? (
-                // Registration Form
                 <form onSubmit={handleSubmitSignup(onRegisterSubmit)} className="space-y-4">
                   <div>
                     <Input
