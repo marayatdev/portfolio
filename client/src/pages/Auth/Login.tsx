@@ -24,7 +24,7 @@ interface UpdateUserFormData {
 }
 
 const Login = () => {
-    const { login, logout, user, register: registerUser } = useAuth();
+    const { login, logout, user, register: registerUser, updateUser } = useAuth();
     const [isRegisterMode, setIsRegisterMode] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
 
@@ -63,7 +63,7 @@ const Login = () => {
 
     const handleUpdateUser = async (data: UpdateUserFormData) => {
         try {
-            const success = await api.put(`/users/${user._id}`, data, { withCredentials: true });
+            const success = await updateUser(data);
             console.log('updating user', data, success);
 
             if (success) {

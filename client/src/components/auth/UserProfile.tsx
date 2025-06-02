@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 interface User {
     email: string;
     name?: string;
-    // Add other user properties as needed
 }
 
 interface UserProfileProps {
@@ -13,9 +12,9 @@ interface UserProfileProps {
 }
 
 const UserProfile = ({ user, onLogout, onEditProfile }: UserProfileProps) => {
+
     return (
         <div className="space-y-3 sm:space-y-4">
-            {/* User Info Display */}
             <div className="p-4 bg-gray-50 rounded-lg">
                 <div className="space-y-2">
                     {user.name && (
@@ -31,7 +30,6 @@ const UserProfile = ({ user, onLogout, onEditProfile }: UserProfileProps) => {
                 </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="space-y-2">
                 {onEditProfile && (
                     <Button

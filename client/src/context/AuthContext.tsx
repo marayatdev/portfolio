@@ -1,6 +1,7 @@
 // context/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import api from '@/lib/axios';
+import { UpdateUserFormData } from '@/components/auth/UpdateUserForm';
 
 interface User {
   _id: string;
@@ -15,6 +16,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   register: (email: string, password: string, name?: string) => Promise<boolean>;
+  updateUser: (data: UpdateUserFormData) => Promise<boolean>;
   checkAuth: () => Promise<void>;
 }
 
@@ -24,7 +26,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // เรียกตอนโหลดหน้าเว็บ
   const checkAuth = async () => {
     try {
       setLoading(true);
@@ -32,24 +33,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (res.data.data) {
         console.log(res.data.data);
-        //set data to localstorage
         localStorage.setItem('user', JSON.stringify(res.data.data));
         setUser(res.data.data);
       }
     } catch (err) {
+      console.error('Auth check failed:', err);
       setUser(null);
+      localStorage.removeItem('user');
     } finally {
       setLoading(false);
     }
   };
 
-  // login จะตั้ง cookie อัตโนมัติถ้า server ทำถูก
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       await api.post('/auth/login', { email, password }, { withCredentials: true });
       await checkAuth();
       return true;
     } catch (err) {
+      console.error('Login failed:', err);
       return false;
     }
   };
@@ -61,38 +63,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         { email, password, name },
         { withCredentials: true }
       );
-      console.log('register response', response.data.success);
-      if (
-        response.data &&
-        (response.data.success || response.status === 200 || response.status === 201)
-      ) {
+
+      console.log('register response', response.data);
+
+      if (response.data && response.data.success) {
+        await checkAuth();
         return true;
       }
       return false;
     } catch (err) {
-      console.error('Registration failed', err);
+      console.error('Registration failed:', err);
       return false;
     }
   };
 
   const logout = async () => {
     console.log('logout');
-
     try {
       await api.post('/auth/logout', {}, { withCredentials: true });
-      setUser(null);
     } catch (err) {
-      console.error('Logout failed', err);
+      console.error('Logout request failed:', err);
+    } finally {
+      setUser(null);
+      localStorage.removeItem('user');
+    }
+  };
+
+  const updateUser = async (data: UpdateUserFormData): Promise<boolean> => {
+    try {
+      const response = await api.put(`/users/${user?._id}`, data, { withCredentials: true });
+      console.log('updateUser response', response.data);
+
+      if (response.data && response.data.success) {
+        await checkAuth();
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('User update failed:', err);
+      return false;
     }
   };
 
   useEffect(() => {
-    checkAuth(); // เรียกตอน mount
+    checkAuth();
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, logout, register: registerUser, checkAuth }}
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        register: registerUser,
+        checkAuth,
+        updateUser
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -101,6 +128,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
   return context;
 };

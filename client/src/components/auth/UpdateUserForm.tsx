@@ -9,7 +9,7 @@ interface User {
     name?: string;
 }
 
-interface UpdateUserFormData {
+export interface UpdateUserFormData {
     id?: string;
     name?: string;
     email: string;
