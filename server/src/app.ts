@@ -42,11 +42,11 @@ class App {
 
     fs.readdirSync(routesPath).forEach((file) => {
       if (file.endsWith(extension)) {
-        const routeName = file.replace(extension, "");
         const routeModulePath = path.join(routesPath, file);
         const route = require(routeModulePath).default;
 
         if (route) {
+          const routeName = file.replace(/\.route\.(ts|js)$/, "");
           this.app.use(`/api/${routeName}`, route);
         }
       }
