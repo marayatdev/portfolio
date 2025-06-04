@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('register response', response.data);
 
       if (response.data && response.data.success) {
-        await checkAuth();
+        // await checkAuth();
         return true;
       }
       return false;

@@ -61,7 +61,6 @@ export class AuthController {
         });
       }
 
-      // Remove password from the response
       const { password, ...userWithoutPassword } = user.toObject();
       ResponseFormatter.success(
         res,
@@ -76,14 +75,14 @@ export class AuthController {
 
   public login = async (req: TypedRequestBody<User>, res: Response) => {
     try {
-      const { email, password } = req.body;
+      const data: User = req.body;
 
-      if (!email || !password) {
+      if (!data.email || !data.password) {
         ResponseFormatter.notFound(res, "Missing required fields");
         return;
       }
 
-      const user = await this.authService.getUserByEmail(email);
+      const user = await this.authService.getUserByEmail(data.email);
       if (!user) {
         ResponseFormatter.validationError(res, {
           email: "Invalid credentials",
@@ -91,7 +90,7 @@ export class AuthController {
         return;
       }
 
-      const isPasswordValid = await argon2.verify(user.password, password);
+      const isPasswordValid = await argon2.verify(user.password, data.password);
       if (!isPasswordValid) {
         ResponseFormatter.validationError(res, {
           email: "Invalid credentials",
