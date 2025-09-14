@@ -16,8 +16,8 @@ const Skills: React.FC = () => {
       skills: ["Node.js", "Express", "Prisma", "MongoDB"]
     },
     {
-      title: "Tools & Others",
-      skills: ["Git", "GitLab", "Docker", "Nginx", "RESTful APIs"]
+      title: "DevOps & Others",
+      skills: ["Git", "GitLab", "Docker", "kubernetes", "Nginx"]
     }
   ];
 

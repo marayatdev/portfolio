@@ -2,11 +2,12 @@
 
 # --------- Config ---------
 USERNAME="marayat"
-TAG="v.1.0.1"
+SERVER_TAG="v1.0.6"
+CLIENT_TAG="v1.0.7"
 
 # --------- Image names ---------
-SERVER_IMAGE="$USERNAME/server:$TAG"
-CLIENT_IMAGE="$USERNAME/client:$TAG"
+SERVER_IMAGE="$USERNAME/server:$SERVER_TAG"
+CLIENT_IMAGE="$USERNAME/client:$CLIENT_TAG"
 
 # --------- Build images ---------
 echo "🔨 Building Docker images..."

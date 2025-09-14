@@ -4,7 +4,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    image: marayat/server:latest
+    image: marayat/server:v1.0.6
     restart: always
     environment:
       - PORT=8000
@@ -16,7 +16,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: marayat/client:latest
+    image: marayat/client:v1.0.7
     environment:
       - API_URL=http://server:8000
     restart: always
@@ -55,7 +55,6 @@ services:
   #   command:  certonly --standalone --email marayat.dev@gmail.com --agree-tos --no-eff-email -d marayatdev.online
   #   networks:
   #     - my_network
-
 
 networks:
   my_network:

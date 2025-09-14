@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+
 
 const Hero: React.FC = () => {
   return (
@@ -16,23 +15,10 @@ const Hero: React.FC = () => {
           </h2>
           <p className="text-slate text-lg mb-8 max-w-xl">
             This DevPortfolio was built with React, Tailwind CSS, Node.js, and MongoDB.
-            It's containerized using Docker and deployed with CI/CD pipelines via GitLab,
+            It's containerized using Docker and deployed on a k3s Kubernetes cluster,
             using Nginx as the web server. The application is hosted on an Azure Virtual Machine instance.
           </p>
-          {/*  <div className="flex flex-wrap gap-4">
-            <Button className="bg-transparent border border-teal text-teal hover:bg-teal/10 group">
-              <a href="#projects">
-                Check out my work
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </a>
-            </Button>
-            <Button
-              variant="ghost"
-              className="text-slate-light hover:text-teal hover:bg-navy-light"
-            >
-              Get in touch
-            </Button>
-          </div> */}
+
         </div>
       </div>
     </section>
